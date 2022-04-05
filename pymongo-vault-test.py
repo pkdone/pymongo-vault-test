@@ -25,7 +25,7 @@ from pymongo.errors import OperationFailure
 
 
 ##
-# Main function to parse passed-in process before invoking the core processing function
+# Main function to parse passed-in process before invoking the core processing function.
 ##
 def main():
     argparser = ArgumentParser(description="A simple tool for testing MongoDB Self-Managed or Atlas"
@@ -52,8 +52,8 @@ def main():
 
 
 ##
-# Connect with the database using authentication credentials sourced from Vault and then test
-# inserting and querying a collection in the database.
+# Connect with the MongoDB database using authentication credentials sourced from Vault and then
+# test inserting and querying a collection in the database.
 ##
 def run(url, rolepath, authdb, dbname, collname):
     (username, password) = getDBCredentials(rolepath)
@@ -88,8 +88,8 @@ def run(url, rolepath, authdb, dbname, collname):
 
 ##
 # Get the database user credentials (username & password) from HashiCorp Vault (assumes local
-# environment is setup with the required context to successfully connect to a local Vault process
-# with an appropriate authentication token in place.
+# environment is setup with the required context to successfully connect to the Vault process with
+# an appropriate authentication token in place.
 ##
 def getDBCredentials(rolepath):
     vaultClient = hvac.Client()
