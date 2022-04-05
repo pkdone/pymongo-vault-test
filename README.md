@@ -76,6 +76,7 @@ In **one terminal**, start the _vault_ server in development mode, via the comma
 
 ```console
 vault server -dev
+
 ```
 
 _NOTE:_ When starting Vault in development mode as shown here, Vault's root token will be automatically saved to `~/.vault-token` for your current host OS user. Assuming you will be running the client application using this same host OS user, this will allow the tests to work with the client application able to access any resources it wants from the current Vault server. However, for Production environments you should not use the root token for Vault access, you should restrict the scope of the client application's access to Vault resource to the bare minimum, and you should follow HashiCorp Vault's [Production Hardening](https://learn.hashicorp.com/tutorials/vault/production-hardening) best practices. 
@@ -86,12 +87,14 @@ Configure the new terminal environment to reference the locally running Vault de
 
 ```console
 export VAULT_ADDR='http://127.0.0.1:8200'
+
 ```
 
 Enable the Vault Database Secrets Engine:
 
 ```console
 vault secrets enable database
+
 ```
 
 In the next sections you will configure database related secrets in Vault in a Development environment. In Production, the Vault identity allowed to create these secrets should be restricted and different to the subsequent identity used by a client application which tries to read one of these secrets. This will ensure that client application cannot _overstep its mark_ and access parts of a database it shouldn't be allowed to. For more information, see [Vault Authentication](https://www.vaultproject.io/docs/concepts/auth) and [Vault Policies](https://www.vaultproject.io/docs/concepts/policies). 
@@ -128,6 +131,7 @@ vault write database/static-roles/myapp1-user-role \
   db_name=selfmngd-mongodb-testdb \
   username="myapp-user" \
   rotation_period=86400
+  
 ```
 
 
@@ -159,6 +163,7 @@ vault write database/static-roles/myapp2-user-role \
   db_name=atlas-mongodb-testdb \
   username="myapp-user" \
   rotation_period=86400
+  
 ```
 
 
@@ -168,6 +173,7 @@ This section will use the provided Python script `pymongo-vault-test`. To view a
 
 ```console
 ./pymongo-vault-test.py -h
+
 ```
 
 
@@ -190,12 +196,14 @@ Using the MongoDB Shell, connect to the database and view the list of users to o
 
 ```console
 mongosh "mongodb://localhost:27017" --username testDBUserAdmin --password testpwd1 --authenticationDatabase testdb
+
 ```
 
 ```javascript
 use testdb;
 db.getUsers();
 exit;
+
 ```
 
 
@@ -208,6 +216,7 @@ Execute the Python test script three times in quick succession with a password r
 ./pymongo-vault-test.py -u 'mongodb://localhost:27017' -r 'database/static-creds/myapp1-user-role' -a testdb
 vault write -f database/rotate-role/myapp1-user-role
 ./pymongo-vault-test.py -u 'mongodb://localhost:27017' -r 'database/static-creds/myapp1-user-role' -a testdb
+
 ```
 
 Notice in the output, the **same** database user is used each time, but for the third time a **different password** has been used, because it had been rotated. 
@@ -216,12 +225,14 @@ Using the MongoDB Shell, connect to the database and view the list of users to o
 
 ```console
 mongosh "mongodb://localhost:27017" --username testDBUserAdmin --password testpwd1 --authenticationDatabase testdb
+
 ```
 
 ```javascript
 use testdb;
 db.getUsers();
 exit;
+
 ```
 
 
@@ -235,6 +246,7 @@ Execute the Python test script twice in quick succession to use a dynamic Vault 
 ```console
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/creds/myapp2-rw-role'
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/creds/myapp2-rw-role'
+
 ```
 
 Notice in the output, a **new** database user (with new password) is created every time and in each case, before a successful database connection is made, a number of authentication errors occur (this happens because Atlas is asynchronously provisioning the database user, which typically takes around 5-30 seconds to complete).
@@ -252,6 +264,7 @@ Execute the Python test script three times in quick succession with a password r
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/static-creds/myapp2-user-role'
 vault write -f database/rotate-role/myapp2-user-role
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/static-creds/myapp2-user-role'
+
 ```
 
 Notice in the output, the **same** database user is used each time, but for the third execution a **different password** has been used, because it had been rotated. Also, notice that only for this third execution, before a successful database connection is made, a number of authentication errors occur. This happens because Atlas is asynchronously changing the database user's password due to the _rotation_ command having been executed just before it.
