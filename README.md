@@ -4,7 +4,7 @@ A simple tool for testing MongoDB [Self-Managed](https://www.mongodb.com/docs/ma
 
 This project assumes you are an experienced MongoDB and Atlas user and have at least a little bit of experience with HashiCorp Vault. If you have no experience with using HashiCorp Vault, it is recommended that you first try the following blog post tutorial: [Manage MongoDB Atlas Database Secrets in HashiCorp Vault](https://www.mongodb.com/blog/post/manage-atlas-database-secrets-hashicorp-vault).
 
-The rest of this README describes how to use this tool to test MongoDB database secrets management for both "dynamic" and "static" database users with both your own self-managed database deployment (using the [MongoDB Database Secrets Engine](https://www.vaultproject.io/docs/secrets/databases/mongodb) plug-in for Vault) and your Atlas deployed database cluster (using the [MongoDB Atlas Database Secrets Engine](https://www.vaultproject.io/docs/secrets/databases/mongodbatlas) plug-in for Vault).
+The rest of this README describes how to use this tool to test MongoDB database secrets management for both "dynamic" and "static" "Vault-mapped" database users with both your own self-managed database deployment (using the [MongoDB Database Secrets Engine](https://www.vaultproject.io/docs/secrets/databases/mongodb) plug-in for Vault) and your Atlas deployed database cluster (using the [MongoDB Atlas Database Secrets Engine](https://www.vaultproject.io/docs/secrets/databases/mongodbatlas) plug-in for Vault).
 
 
 ## Prerequisites
@@ -78,9 +78,9 @@ In **one terminal**, start the _vault_ server in development mode, via the comma
 vault server -dev
 ```
 
-_NOTE:_ When starting Vault in development mode as shown here, Vault's root token will be automatically saved to `~/.vault-token` for your current host OS user. Assuming you will be running the client application using this same host OS user, this will allow the tests to work with the client application able to access any resources it wants from the current Vault server. However, for Production environments you should not use the root token for Vault access, you should restrict the scope of the client application's access to Vault resource to the bare minimum, and you should follow HashiCorp Vault's [Production Hardening]{https://learn.hashicorp.com/tutorials/vault/production-hardening) best practices. 
+_NOTE:_ When starting Vault in development mode as shown here, Vault's root token will be automatically saved to `~/.vault-token` for your current host OS user. Assuming you will be running the client application using this same host OS user, this will allow the tests to work with the client application able to access any resources it wants from the current Vault server. However, for Production environments you should not use the root token for Vault access, you should restrict the scope of the client application's access to Vault resource to the bare minimum, and you should follow HashiCorp Vault's [Production Hardening](https://learn.hashicorp.com/tutorials/vault/production-hardening) best practices. 
 
-Keep the Vault process running in the first terminal and start a **second terminal** to use for the rest of the Vault configuration steps and Python tests in this README.
+Keep the Vault process running in the first terminal and start a **second terminal** to use for all the remaining Vault configuration steps and Python tests.
 
 Configure the new terminal environment to reference the locally running Vault development server:
 
@@ -123,7 +123,7 @@ vault write database/roles/myapp1-rw-role \
     default_ttl="1h" \
     max_ttl="24h"
 
-# Define a Static database (user) role for MongoDB
+# Define a Static database role for MongoDB
 vault write database/static-roles/myapp1-user-role \
   db_name=selfmngd-mongodb-testdb \
   username="myapp-user" \
@@ -154,7 +154,7 @@ vault write database/roles/myapp2-rw-role \
   default_ttl="1h" \
   max_ttl="24h"
 
-# Define a Static database (user) role for Atlas
+# Define a Static database role for Atlas
 vault write database/static-roles/myapp2-user-role \
   db_name=atlas-mongodb-testdb \
   username="myapp-user" \
@@ -164,7 +164,7 @@ vault write database/static-roles/myapp2-user-role \
 
 ## Running the Test Python Application
 
-This section will use the provider Python script `pymongo-vault-test.py`. To view all the parameters available for executing the script, run the following:
+This section will use the provided Python script `pymongo-vault-test`. To view all the parameters available for executing the script, run the following:
 
 ```console
 ./pymongo-vault-test.py -h
@@ -176,7 +176,7 @@ This section will use the provider Python script `pymongo-vault-test.py`. To vie
 
 #### Dynamic Role User Test
 
-Execute the Python test script twice in quick succession, to use a dynamic Vault role which will create a new user with new password for each execution (first change the connection string `localhost:27017` to match your local MongoDB listen address, if required):
+Execute the Python test script twice in quick succession to use a dynamic Vault role which will create a new user with new password for each execution (first change the connection string `localhost:27017` to match your local MongoDB listen address, if required):
 
 ```console
 ./pymongo-vault-test.py -u 'mongodb://localhost:27017' -r 'database/creds/myapp1-rw-role' -a testdb
@@ -200,7 +200,7 @@ exit;
 
 #### Static Role User Test
 
-Execute the Python test script three times in quick succession, with a password rotation command issued in-between, to use a static Vault role which relies on the user already existing in the database and to retrieve its username and current password (first change the connection string `localhost:27017` to match your local MongoDB listen address, if required):
+Execute the Python test script three times in quick succession with a password rotation command issued in-between, to use a static Vault role which relies on the user already existing in the database and to retrieve its username and current password (first change the connection string `localhost:27017` to match your local MongoDB listen address, if required):
 
 ```console
 ./pymongo-vault-test.py -u 'mongodb://localhost:27017' -r 'database/static-creds/myapp1-user-role' -a testdb
@@ -229,7 +229,7 @@ exit;
 
 #### Dynamic Role User Test
 
-Execute the Python test script twice in quick succession, to use a dynamic Vault role which will create a new user with new password for each execution (first change the connection string `mycluster.a123z.mongodb.net` to match your Atlas cluster SRV address):
+Execute the Python test script twice in quick succession to use a dynamic Vault role which will create a new user with new password for each execution (first change the connection string `mycluster.a123z.mongodb.net` to match your Atlas cluster SRV address):
 
 ```console
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/creds/myapp2-rw-role'
@@ -244,7 +244,7 @@ Go to the [Atlas Console](https://cloud.mongodb.com), and for your Atlas Project
 
 #### Static Role User Test
 
-Execute the Python test script three times in quick succession, with a password rotation command issued in-between, to use a static Vault role which relies on the user already existing in the database and to retrieve its username and current password (first change the connection string `mycluster.a123z.mongodb.net` to match your Atlas cluster SRV address):
+Execute the Python test script three times in quick succession with a password rotation command issued in-between, to use a static Vault role which relies on the user already existing in the database and to retrieve its username and current password (first change the connection string `mycluster.a123z.mongodb.net` to match your Atlas cluster SRV address):
 
 ```console
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/static-creds/myapp2-user-role'
