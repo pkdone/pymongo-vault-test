@@ -181,6 +181,7 @@ Execute the Python test script twice in quick succession to use a dynamic Vault 
 ```console
 ./pymongo-vault-test.py -u 'mongodb://localhost:27017' -r 'database/creds/myapp1-rw-role' -a testdb
 ./pymongo-vault-test.py -u 'mongodb://localhost:27017' -r 'database/creds/myapp1-rw-role' -a testdb
+
 ```
 
 Notice in the output, a **new** database user (with new password) is created every time. 
