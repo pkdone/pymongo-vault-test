@@ -236,7 +236,7 @@ Execute the Python test script twice in quick succession to use a dynamic Vault 
 ./pymongo-vault-test.py -u 'mongodb+srv://mycluster.a123z.mongodb.net/' -r 'database/creds/myapp2-rw-role'
 ```
 
-Notice in the output, a **new** database user (with new password) is created every time and in each case, before a successful database connection is made, a number of authentication errors occur (this happens because Atlas is asynchronously provisioning the database user, which typically takes around 10-30 seconds to complete).
+Notice in the output, a **new** database user (with new password) is created every time and in each case, before a successful database connection is made, a number of authentication errors occur (this happens because Atlas is asynchronously provisioning the database user, which typically takes around 5-30 seconds to complete).
 
 Go to the [Atlas Console](https://cloud.mongodb.com), and for your Atlas Project select the **SECURITY | Database Access** link and in the shown **Database Users** page, observe that **two new users** have been created.
 
