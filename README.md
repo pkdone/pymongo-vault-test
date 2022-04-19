@@ -1,4 +1,4 @@
-# PyMongo Vault Test
+# Hashicorp Vault PyMongoDB DB Secrets Tests
 
 A simple tool for testing MongoDB [Self-Managed](https://www.mongodb.com/docs/manual/) or [Atlas](https://www.mongodb.com/docs/atlas/) database user integration with [HashiCorp Vault](https://www.vaultproject.io/) from the perspective of a client application using one of the [MongoDB Drivers](https://www.mongodb.com/docs/drivers/) (PyMongo in this case).
 
