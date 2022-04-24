@@ -67,7 +67,7 @@ You have the following configured:
  - [An Atlas cluster is deployed](https://www.mongodb.com/docs/atlas/getting-started/) in the cloud with the following set:
     - Your [Connection IP Address is added to the IP Access List](https://www.mongodb.com/docs/atlas/security/add-ip-address-to-list/)
     - An [Atlas Database User is created for your Cluster](https://www.mongodb.com/docs/atlas/tutorial/create-mongodb-user-for-cluster/) called **myapp-user** where just one database user privilege is defined for this new user, by assigning **readWrite@testdb** in  **Specific Privileges** (to ensure this user can only read and write to a database called `testdb`)
-    - An [Atlas Admin API Key is created for your Atlas Project](https://www.mongodb.com/docs/atlas/tutorial/configure-api-access/project/create-one-api-key/) assigned with the role **Project Owner**
+    - An [Atlas Admin API Key is created for your Atlas Project](https://www.mongodb.com/docs/atlas/tutorial/configure-api-access/project/create-one-api-key/) assigned with the role **Project Owner** and has an **Access List configured** which includes your IP Address
 
 
 ## Vault Configuration
